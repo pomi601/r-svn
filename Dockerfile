@@ -29,7 +29,7 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
     msys ' ';
 
-# TinyTex
+# TinyTex, from https://github.com/r-lib/actions/blob/v2-branch/setup-tinytex/src/setup-tinytex.ts
 RUN \
     Start-Process tzutil -ArgumentList '/s "GMT Standard Time"' -Wait; \
     Invoke-WebRequest \
@@ -38,27 +38,37 @@ RUN \
     Start-Process "install-bin-windows.bat" -Wait ; \
     Remove-Item "install-bin-windows.bat" -Force;
 
+# From build-svn.yaml
 RUN \
-    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" -ArgumentList 'install texinfo' -Wait;
+    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" -ArgumentList 'update --self' -Wait; \
+    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" -ArgumentList 'install texinfo' -Wait; \
+    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" -ArgumentList 'list --only-installed' -Wait;
 
+# From build-svn.yaml
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys 'pacman --noconfirm git make perl curl texinfo texinfo-tex rsync zip unzip diffutils wget subversion'; \
+    msys 'pacman --noconfirm -S git make perl curl texinfo texinfo-tex rsync zip unzip diffutils wget subversion'; \
     msys 'pacman --noconfirm -Scc';
 
+# From build-svn.yaml
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
     $command = 'curl -sSL ' + ${env:RTOOLS} + ' | tar x --zstd -C /c/'; \
     echo $command; \
     msys $command;
 
+# Some missing packages during vignette builds
+RUN \
+    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" \
+    -ArgumentList 'install grfext inconsolata makeindex listings parskip' -Wait;
 
 COPY ./ src/
 
-# # RUN \
-# #     tzutil /s "GMT Standard Time" \
-# #     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-# #     msys 'cd /c/src && .github/scripts/win-installer.sh'
+# From build-svn.yaml, except use mini file
+RUN \
+    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
+    msys "sed -i.bak 's/rsync -rc/rsync -r/' tools/rsync-recommended"; \
+    msys 'cd /c/src && .github/scripts/win-installer.sh'
 
 
 ENTRYPOINT ["C:\\msys64\\usr\\bin\\bash.exe", "-li"]
