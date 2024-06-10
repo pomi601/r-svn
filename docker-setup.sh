@@ -19,4 +19,4 @@ tlmgr.bat install texinfo
 
 
 # Rtools
-# curl -sSL $RTOOLS | tar x --force-local --zstd -C /c/
+curl -sSL $RTOOLS | tar x --force-local --zstd -C /c/

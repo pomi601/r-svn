@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022 as base
 ARG MSYS=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
 ARG TINYTEX=https://yihui.org/tinytex/install-bin-windows.bat
 ARG INNOSETUP=https://jrsoftware.org/download.php/is.exe
+ARG RTOOLS=https://github.com/r-windows/rtools-chocolatey/releases/download/6104/rtools44-toolchain-libs-base-6104.tar.zst
 
 # SHELL ["cmd", "/S", "/C"]
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -37,11 +38,20 @@ RUN \
     Start-Process "install-bin-windows.bat" -Wait ; \
     Remove-Item "install-bin-windows.bat" -Force;
 
-COPY docker-setup.sh .
+RUN \
+    Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" -ArgumentList 'install texinfo' -Wait;
+
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys '/bin/sh /c/docker-setup.sh'; \
-    Remove-Item docker-setup.sh
+    msys 'pacman --noconfirm git make perl curl texinfo texinfo-tex rsync zip unzip diffutils wget subversion'; \
+    msys 'pacman --noconfirm -Scc';
+
+RUN \
+    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
+    $command = 'curl -sSL ' + ${env:RTOOLS} + ' | tar x --zstd -C /c/'; \
+    echo $command; \
+    msys $command;
+
 
 COPY ./ src/
 
