@@ -72,24 +72,3 @@ RUN \
 
 
 ENTRYPOINT ["C:\\msys64\\usr\\bin\\bash.exe", "-li"]
-
-# # RUN powershell -Command Invoke-WebRequest \
-# #     -Uri "https://cran.r-project.org/bin/windows/Rtools/rtools44/files/$env:RTOOLS" \
-# #     -OutFile $env:RTOOLS
-
-# COPY $RTOOLS $RTOOLS
-
-# RUN powershell -Command \
-#     $ErrorActionPreference = 'Stop'; \
-#     Start-Process $env:RTOOLS -ArgumentList '/verysilent /suppressmsgboxes /norestart' -Wait ; \
-#     Remove-Item $env:RTOOLS -Force
-
-
-
-
-
-# COPY ./ src/
-
-# ENTRYPOINT ["c:\\rtools44\\usr\\bin\\env", "MSYSTEM=MSYS", \
-#     "MSYS=nonnativeinnerlinks" , \
-#     "/usr/bin/bash", "--init-file", "/c/env.sh", "-i"]
