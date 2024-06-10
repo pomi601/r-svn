@@ -62,13 +62,4 @@ RUN \
     Start-Process "$env:AppData/TinyTeX/bin/windows/tlmgr" \
     -ArgumentList 'install grfext inconsolata makeindex listings parskip' -Wait;
 
-COPY ./ src/
-
-# From build-svn.yaml, except use mini file
-RUN \
-    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys "sed -i.bak 's/rsync -rc/rsync -r/' tools/rsync-recommended"; \
-    msys 'cd /c/src && .github/scripts/win-installer.sh'
-
-
 ENTRYPOINT ["C:\\msys64\\usr\\bin\\bash.exe", "-li"]

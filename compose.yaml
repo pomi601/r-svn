@@ -1,8 +1,13 @@
 services:
-  r-source:
+  r-source-build-all:
     build:
       context: .
-    # volumes:
-    #   - .:c:\src
-
-    
+      dockerfile: build-all.Dockerfile
+  r-source-bind:
+    build:
+      context: .
+      dockerfile: bind.Dockerfile
+    volumes:
+      - type: bind
+        source: .
+        target: c:\src
