@@ -1,0 +1,8 @@
+services:
+  r-source:
+    build:
+      context: .
+    # volumes:
+    #   - .:c:\src
+
+    
