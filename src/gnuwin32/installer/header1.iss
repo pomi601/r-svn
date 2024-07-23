@@ -1,4 +1,4 @@
-PrivilegesRequired=lowest
+PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 MinVersion=0,6.1
 DefaultGroupName=R
