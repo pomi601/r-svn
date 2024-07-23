@@ -1,5 +1,5 @@
-PrivilegesRequired=none
-PrivilegesRequiredOverridesAllowed=commandline
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 MinVersion=0,6.1
 DefaultGroupName=R
 AllowNoIcons=yes
